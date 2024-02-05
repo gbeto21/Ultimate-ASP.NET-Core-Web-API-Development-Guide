@@ -39,11 +39,20 @@ namespace HotelListingAPI.Repository
             try
             {
                 var user = await _userManager.FindByEmailAsync(loginDto.Email);
+                if (user == null)
+                {
+                    return default;
+                }
+
                 isValidUser = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+                if (!isValidUser)
+                {
+                    return default;
+                }
             }
             catch (Exception)
             {
-                                
+
             }
             return isValidUser;
         }
