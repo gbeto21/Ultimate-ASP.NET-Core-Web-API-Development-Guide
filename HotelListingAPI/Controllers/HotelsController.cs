@@ -9,11 +9,13 @@ using HotelListingAPI.Data;
 using HotelListingAPI.Contracts;
 using AutoMapper;
 using HotelListingAPI.Models.Hotel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelListingAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class HotelsController : ControllerBase
     {
         private readonly IHotelsRepository _hotelsRepository;
