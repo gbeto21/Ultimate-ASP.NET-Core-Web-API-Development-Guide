@@ -15,16 +15,23 @@ namespace HotelListingAPI.Repository
         private IMapper _mapper;
         private UserManager<ApiUser> _userManager;
         private IConfiguration _configuration;
+        private readonly ILogger<AuthManager> _logger;
         private ApiUser _user;
 
         private const string LOGIN_PROVIDER = "HotelListingApi";
         private const string REFRESH_TOKEN = "RefreshToken";
 
-        public AuthManager(IMapper mapper, UserManager<ApiUser> userManager, IConfiguration configuration)
+        public AuthManager(
+            IMapper mapper, 
+            UserManager<ApiUser> userManager, 
+            IConfiguration configuration, 
+            ILogger<AuthManager> logger
+            )
         {
             this._mapper = mapper;
             this._userManager = userManager;
             this._configuration = configuration;
+            this._logger = logger;
         }
 
 
@@ -48,9 +55,11 @@ namespace HotelListingAPI.Repository
             bool isValidUser = false;
             try
             {
+                _logger.LogInformation($"Looking for user with email {loginDto.Email}");
                 _user = await _userManager.FindByEmailAsync(loginDto.Email);
                 if (_user == null)
                 {
+                    _logger.LogWarning($"User with email {loginDto.Email} was not found.");
                     return default;
                 }
 
