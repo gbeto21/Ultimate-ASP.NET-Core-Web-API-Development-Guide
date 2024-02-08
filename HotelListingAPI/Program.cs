@@ -8,6 +8,7 @@ using Serilog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using HotelListingAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,6 +75,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseSerilogRequestLogging();
 

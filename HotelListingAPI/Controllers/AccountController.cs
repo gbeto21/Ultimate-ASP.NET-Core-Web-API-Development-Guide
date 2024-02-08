@@ -27,29 +27,17 @@ namespace HotelListingAPI.Controllers
         {
             _logger.LogInformation($"Registration Attempt for {apiUserDto.Email}");
 
-            try
+            var errors = await _authManager.Register(apiUserDto);
+            if (errors.Any())
             {
-                var errors = await _authManager.Register(apiUserDto);
-                if (errors.Any())
+                foreach (var error in errors)
                 {
-                    foreach (var error in errors)
-                    {
-                        ModelState.AddModelError(error.Code, error.Description);
-                    }
-                    return BadRequest(ModelState);
+                    ModelState.AddModelError(error.Code, error.Description);
                 }
-                return Ok();
-
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(
-                    ex,
-                    $"Something went wrong in the {nameof(Register)} - User Registration attempt for {apiUserDto.Email}"
-                );
+            return Ok();
 
-                return Problem($"Something went wrong in the {nameof(Register)}.", statusCode: 500);
-            }
         }
 
         // POST api/Account/login
@@ -62,20 +50,12 @@ namespace HotelListingAPI.Controllers
         {
             _logger.LogInformation($"Login attempt for {loginDto.Email}");
 
-            try
+            var authResponse = await _authManager.Login(loginDto);
+            if (authResponse == null)
             {
-                var authResponse = await _authManager.Login(loginDto);
-                if (authResponse == null)
-                {
-                    return Unauthorized();
-                }
-                return Ok(authResponse);
+                return Unauthorized();
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something went wrong in the {nameof(Login)}");
-                return Problem($"Something went wrong in the {nameof(Login)}", statusCode: 500);
-            }
+            return Ok(authResponse);
 
         }
 
